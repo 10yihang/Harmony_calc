@@ -1,5 +1,5 @@
 import router from '@ohos.router';
-
+import ArrayList from '@ohos.util.ArrayList'
 
 
 @Entry
@@ -10,8 +10,9 @@ struct Calculator {
     @State firstOperand: string = '';
     @State waitingForSecondOperand: boolean = false;
     @State selectedMode: string = '科学';
-    @State Functions: string = '';
+    @State Functions: ArrayList<string> = new ArrayList();
     @State FunctionMode: boolean = false;
+    @State FunctionFini: boolean = false;
     @State pi: number = 3.141592653589793;
     @State e: number = 2.718281828459045;
 
@@ -56,7 +57,13 @@ struct Calculator {
             // 按钮布局
             Row() {
                 Button('π').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.displayValue = this.pi.toString();
+                    if(this.FunctionMode){
+                        this.displayValue += 'π';
+                        if(!this.checkBase(this.Functions[this.Functions.length - 1]))   {
+                            this.lstInsert('π');
+                        }
+                        this.Functions.add('π');
+                    } else this.displayValue = this.pi.toString();
                 })
                     .margin({right: 5});
                 Button('C').width('18%').height(60).fontSize(18).onClick(() => {
@@ -64,10 +71,21 @@ struct Calculator {
                     this.firstOperand = '';
                     this.currentOperator = '';
                     this.waitingForSecondOperand = false;
+                    if(this.FunctionMode){
+                        this.displayValue += 'x';
+                        this.Functions.clear();
+                        this.FunctionFini = false;
+                    }
                 })
                     .margin({right: 5});
                 Button('%').width('18%').height(60).fontSize(18).onClick(() => {
-                    if (this.displayValue!== '' && this.waitingForSecondOperand === false) {
+                    if(this.FunctionMode){
+                        this.displayValue += '%';
+                        if(!this.checkBase(this.Functions[this.Functions.length - 1]))   {
+                            this.lstInsert('%');
+                        }
+                        this.Functions.add('%');
+                    } else if (this.displayValue!== '' && this.waitingForSecondOperand === false) {
                         this.displayValue = (parseFloat(this.displayValue) / 100).toString();
                     }
                 })
@@ -211,7 +229,10 @@ struct Calculator {
 
             Row() {
                 Button('fun').width('18%').height(60).fontSize(18).onClick(()=>{
-
+                    this.FunctionMode = !this.FunctionMode;
+                    if(this.FunctionMode){
+                        this.displayValue = 'x';
+                    }
                 })
                     .margin({right: 5});
                 Button('±').width('18%').height(60).fontSize(18).onClick(() => {
@@ -301,6 +322,15 @@ struct Calculator {
             this.currentOperator = '';
             this.waitingForSecondOperand = false;
         }
+    }
+
+    checkBase(c: string): boolean{
+    const operators = ['+', '-', '*', '/', '^'];
+    return !operators.includes(c);
+};
+
+    funcRecord(str: string){
+        this.Functions.add(str);
     }
 
     preInsert(str: string) {
