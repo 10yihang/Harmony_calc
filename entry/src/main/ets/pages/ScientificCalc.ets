@@ -1,5 +1,4 @@
 import router from '@ohos.router';
-import ArrayList from '@ohos.util.ArrayList'
 
 
 @Entry
@@ -10,9 +9,10 @@ struct Calculator {
     @State firstOperand: string = '';
     @State waitingForSecondOperand: boolean = false;
     @State selectedMode: string = '科学';
-    @State Functions: ArrayList<string> = new ArrayList();
+    @State FunctionStr: string = '';
     @State FunctionMode: boolean = false;
     @State FunctionFini: boolean = false;
+    @State expression: string = '';
     @State pi: number = 3.141592653589793;
     @State e: number = 2.718281828459045;
 
@@ -57,12 +57,9 @@ struct Calculator {
             // 按钮布局
             Row() {
                 Button('π').width('18%').height(60).fontSize(18).onClick(() => {
-                    if(this.FunctionMode){
+                    if(this.FunctionMode && !this.FunctionFini){
                         this.displayValue += 'π';
-                        if(!this.checkBase(this.Functions[this.Functions.length - 1]))   {
-                            this.lstInsert('π');
-                        }
-                        this.Functions.add('π');
+                        this.displayValue = '(' + this.displayValue + ')';
                     } else this.displayValue = this.pi.toString();
                 })
                     .margin({right: 5});
@@ -72,19 +69,15 @@ struct Calculator {
                     this.currentOperator = '';
                     this.waitingForSecondOperand = false;
                     if(this.FunctionMode){
-                        this.displayValue += 'x';
-                        this.Functions.clear();
-                        this.FunctionFini = false;
+                        if(!this.FunctionFini){
+                            this.displayValue = '';
+                        }
                     }
                 })
                     .margin({right: 5});
                 Button('%').width('18%').height(60).fontSize(18).onClick(() => {
-                    if(this.FunctionMode){
-                        this.displayValue += '%';
-                        if(!this.checkBase(this.Functions[this.Functions.length - 1]))   {
-                            this.lstInsert('%');
-                        }
-                        this.Functions.add('%');
+                    if(this.FunctionMode && !this.FunctionFini){
+                        this.displayValue += '%'
                     } else if (this.displayValue!== '' && this.waitingForSecondOperand === false) {
                         this.displayValue = (parseFloat(this.displayValue) / 100).toString();
                     }
@@ -97,53 +90,76 @@ struct Calculator {
                 })
                     .margin({right: 5});
                 Button('÷').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.performOperation('/');
+                    if(this.FunctionMode)   {
+                        this.displayValue += '/';
+                    } else this.performOperation('/');
                 })
                     .margin({right: 5});
             };
             Text().height(5);
             Row() {
                 Button('e').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.displayValue = this.e.toString();
+                    if(this.FunctionMode && !this.FunctionFini) {
+                        this.displayValue += 'e';
+                        this.displayValue = '(' + this.e + ')';
+                    } else this.displayValue = this.e.toString();
                 })
                     .margin({right: 5});
                 Button('√').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.performScientificFunction('sqrt');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue = 'sqrt(' + this.displayValue + ')';
+                    } else this.performScientificFunction('sqrt');
                 })
                     .margin({right: 5});
                 Button('log').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.performScientificFunction('log');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue = 'log10(' + this.displayValue + ')';
+                    } else this.performScientificFunction('log');
                 })
                     .margin({right: 5});
                 Button('ln').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.performScientificFunction('ln');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue = 'ln(' + this.displayValue + ')';
+                    } else this.performScientificFunction('ln');
                 })
                     .margin({right: 5});
                 Button('^').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.performOperation('^');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue += '^';
+                    } else this.performOperation('^');
                 })
                     .margin({right: 5});
             }
             Text().height(5);
             Row() {
                 Button('mo').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.performOperation('%');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue += '%';
+                    } else this.performOperation('%');
                 })
                     .margin({right: 5});
                 Button('abs').width('18%').height(60).fontSize(18).onClick(()=>{
-                    this.performScientificFunction('abs');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue = 'abs(' + this.displayValue + ')';
+                    } else this.performScientificFunction('abs');
                 })
                     .margin({right: 5});
                 Button('sin').width('18%').height(60).fontSize(18).onClick(()=>{
-                    this.performScientificFunction('sin');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue = 'sin(' + this.displayValue + ')';
+                    } else this.performScientificFunction('sin');
                 })
                     .margin({right: 5});
                 Button('cos').width('18%').height(60).fontSize(18).onClick(()=>{
-                    this.performScientificFunction('cos');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue = 'cos(' + this.displayValue + ')';
+                    } else this.performScientificFunction('cos');
                 })
                     .margin({right: 5});
                 Button('tan').width('18%').height(60).fontSize(18).onClick(()=>{
-                    this.performScientificFunction('tan');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue = 'tan(' + this.displayValue + ')';
+                    } else this.performScientificFunction('tan');
                 })
                     .margin({right: 5});
             }
@@ -152,23 +168,30 @@ struct Calculator {
 
             Row() {
                 Button('!').width('18%').height(60).fontSize(18).onClick(()=>{
-                    this.performScientificFunction('factorial');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue = 'fac(' + this.displayValue + ')';
+                    } else this.performScientificFunction('factorial');
                 })
                     .margin({right: 5});
                 Button('7').width('18%').height(60).fontSize(18).onClick(() => {
                     this.appendToDisplay('7');
+                    if(this.FunctionMode && !this.FunctionFini)   this.displayValue = '(' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('8').width('18%').height(60).fontSize(18).onClick(() => {
                     this.appendToDisplay('8');
+                    if(this.FunctionMode && !this.FunctionFini)   this.displayValue = '(' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('9').width('18%').height(60).fontSize(18).onClick(() => {
                     this.appendToDisplay('9');
+                    if(this.FunctionMode && !this.FunctionFini)   this.displayValue = '(' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('×').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.performOperation('*');
+                    if (this.FunctionMode && !this.FunctionFini){
+                        this.displayValue += '*';
+                    } else this.performOperation('*');
                 })
                     .margin({right: 5});
             };
@@ -176,23 +199,32 @@ struct Calculator {
             Text().height(5);
 
             Row() {
-                Button('art').width('18%').height(60).fontSize(18).onClick(()=>{
-                    this.performScientificFunction('arctan');
+                Button('art').width('18%').height(60).fontSize(18).onClick(()=> {
+                    if(this.FunctionMode && !this.FunctionFini){
+                        this.displayValue = 'arctan(' + this.displayValue + ')';
+                    } else this.performScientificFunction('arctan');
                 })
                     .margin({right: 5});
                 Button('4').width('18%').height(60).fontSize(18).onClick(() => {
                     this.appendToDisplay('4');
+                    if(this.FunctionMode && !this.FunctionFini)   this.displayValue = '(' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('5').width('18%').height(60).fontSize(18).onClick(() => {
                     this.appendToDisplay('5');
+                    if(this.FunctionMode && !this.FunctionFini)   this.displayValue = '(' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('6').width('18%').height(60).fontSize(18).onClick(() => {
                     this.appendToDisplay('6');
+                    if(this.FunctionMode && !this.FunctionFini)   this.displayValue = '(' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('-').width('18%').height(60).fontSize(18).onClick(() => {
+                    if(this.FunctionMode && !this.FunctionFini){
+                        this.displayValue += '-';
+                        return;
+                    }
                     if(this.displayValue!=='') this.performOperation('-');
                     else {
                         this.displayValue = '-';
@@ -204,23 +236,30 @@ struct Calculator {
 
             Row() {
                 Button('inv').width('18%').height(60).fontSize(18).onClick(()=>{
-                    this.performScientificFunction('inv');
+                    if(this.FunctionMode && !this.FunctionFini){
+                        this.displayValue = 'inv(' + this.displayValue + ')';
+                    } else this.performScientificFunction('inv');
                 })
                     .margin({right: 5});
                 Button('1').width('18%').height(60).fontSize(18).onClick(() => {
                     this.appendToDisplay('1');
+                    if(this.FunctionMode && !this.FunctionFini)   this.displayValue = '(' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('2').width('18%').height(60).fontSize(18).onClick(() => {
                     this.appendToDisplay('2');
+                    if(this.FunctionMode && !this.FunctionFini)   this.displayValue = '(' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('3').width('18%').height(60).fontSize(18).onClick(() => {
                     this.appendToDisplay('3');
+                    if(this.FunctionMode && !this.FunctionFini)   this.displayValue = '(' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('+').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.performOperation('+');
+                    if(this.FunctionMode && !this.FunctionFini){
+                        this.displayValue += '+' ;
+                    } else this.performOperation('+');
                 })
                     .margin({right: 5});
             };
@@ -231,18 +270,23 @@ struct Calculator {
                 Button('fun').width('18%').height(60).fontSize(18).onClick(()=>{
                     this.FunctionMode = !this.FunctionMode;
                     if(this.FunctionMode){
+                        this.FunctionFini = false;
                         this.displayValue = 'x';
+                    } else {
+                        this.displayValue = '';
                     }
                 })
                     .margin({right: 5});
                 Button('±').width('18%').height(60).fontSize(18).onClick(() => {
-                    if (this.displayValue!== '') {
+                    if (this.displayValue !== '') {
                         this.displayValue = (parseFloat(this.displayValue) * -1).toString();
                     }
+                    if (this.FunctionMode && !this.FunctionFini)  this.displayValue = '(0' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('0').width('18%').height(60).fontSize(18).onClick(() => {
                     this.appendToDisplay('0');
+                    if(this.FunctionMode && !this.FunctionFini)   this.displayValue = '(' + this.displayValue + ')';
                 })
                     .margin({right: 5});
                 Button('.').width('18%').height(60).fontSize(18).onClick(() => {
@@ -252,7 +296,20 @@ struct Calculator {
                 })
                     .margin({right: 5});
                 Button('=').width('18%').height(60).fontSize(18).onClick(() => {
-                    this.performEqual();
+                    if(this.FunctionMode){
+                      if(!this.FunctionFini)    {
+                          this.FunctionFini = true;
+                          this.FunctionStr = this.displayValue;
+                          this.displayValue = 'f(x) = ' + this.displayValue;
+                      }
+                      else {
+                          if(this.displayValue!=this.FunctionStr){
+                              this.performEqual();
+                              this.expression = this.FunctionStr.replace('x',this.displayValue);
+                                this.calculate(this.expression);
+                          }
+                      }
+                    } else this.performEqual();
                 })
                     .margin({right: 5});
             };
@@ -330,7 +387,7 @@ struct Calculator {
 };
 
     funcRecord(str: string){
-        this.Functions.add(str);
+        this.FunctionStr += str;
     }
 
     preInsert(str: string) {
@@ -339,14 +396,6 @@ struct Calculator {
 
     lstInsert(str: string){
         this.displayValue = '(' + this.displayValue + ')' + str;
-    }
-
-    factorial(n: number): number {
-        let res: number = 1;
-        for (let i = 1; i <= n; i++) {
-            res *= i;
-        }
-        return res;
     }
 
     performScientificFunction(func: string) {
@@ -439,5 +488,155 @@ struct Calculator {
         }
     }
 
+    infixToPostfix(expression: string): string[] {
+        const precedence = new Map<string, number>([
+            ['+', 1],
+            ['-', 1],
+            ['*', 2],
+            ['/', 2],
+            ['%', 2],
+            ['^', 3],
+            ['sqrt', 3],
+            ['log10', 3],
+            ['ln', 3],
+            ['sin', 3],
+            ['cos', 3],
+            ['tan', 3],
+            ['arctan', 3],
+            ['fac', 3],
+            ['inv', 3],
+            ['abs', 3]
+        ])
+        const output: string[] = []
+        const operators: string[] = []
+        const functions: Set<string> = new Set(['sqrt', 'log10', 'ln', 'sin', 'cos', 'tan'
+            , 'inv', 'abs', 'fac', 'arctan'])
+
+        let i = 0
+        while (i < expression.length) {
+            const token = expression[i]
+            if (!isNaN(parseFloat(token)) || token === '.') {
+                let num = token
+                while (!isNaN(parseFloat(expression[i + 1])) || expression[i + 1] === '.') {
+                    num += expression[++i]
+                }
+                output.push(num)
+            } else if (token === '(') {
+                operators.push(token)
+            } else if (token === ')') {
+                while (operators.length && operators[operators.length - 1] !== '(') {
+                    output.push(operators.pop()!)
+                }
+                operators.pop()
+                if (operators.length && functions.has(operators[operators.length - 1])) {
+                    output.push(operators.pop()!)
+                }
+            } else if (functions.has(expression.slice(i, i+6)) || functions.has(expression.slice(i, i + 5)) || functions.has(expression.slice(i, i + 4)) || functions.has(expression.slice(i, i + 3)) || functions.has(expression.slice(i, i + 2))) {
+                let func = ''
+                if(functions.has(expression.slice(i, i + 6))){
+                    func = expression.slice(i, i + 6)
+                    i += 5
+                } else if (functions.has(expression.slice(i, i + 5))) {
+                    func = expression.slice(i, i + 5)
+                    i += 4
+                } else if (functions.has(expression.slice(i, i + 4))) {
+                    func = expression.slice(i, i + 4)
+                    i += 3
+                } else if (functions.has(expression.slice(i, i + 3))){
+                    func = expression.slice(i, i + 3)
+                    i += 2
+                } else {
+                    func = expression.slice(i, i + 2)
+                    i += 1
+                }
+                operators.push(func)
+            } else if (precedence.has(token)) {
+                while (operators.length && precedence.get(operators[operators.length - 1])! >= precedence.get(token)!) {
+                    output.push(operators.pop()!)
+                }
+                operators.push(token)
+            }
+            i++
+        }
+
+        while (operators.length) {
+            output.push(operators.pop()!)
+        }
+
+        return output
+    }
+
+    evaluatePostfix(postfix: string[]): number {
+        const stack: number[] = []
+
+        postfix.forEach(token => {
+            if (token === 'e' ) {
+                stack.push(Math.E)
+            } else if(token === 'π') {
+                stack.push(Math.PI)
+            } else if (!isNaN(parseFloat(token))) {
+                stack.push(parseFloat(token))
+            } else if (token === '+') {
+                stack.push(stack.pop()! + stack.pop()!)
+            } else if (token === '-') {
+                const b = stack.pop()!
+                const a = stack.pop()!
+                stack.push(a - b)
+            } else if (token === '%') {
+                stack.push(stack.pop()! % stack.pop()!)
+            } else if (token === '*') {
+                stack.push(stack.pop()! * stack.pop()!)
+            } else if (token === '/') {
+                const b = stack.pop()!
+                const a = stack.pop()!
+                stack.push(a / b)
+            } else if (token === '^') {
+                const b = stack.pop()!
+                const a = stack.pop()!
+                stack.push(Math.pow(a, b))
+            } else if (token === 'sqrt') {
+                stack.push(Math.sqrt(stack.pop()!))
+            } else if (token === 'log10') {
+                stack.push(Math.log10(stack.pop()!))
+            } else if (token === 'ln') {
+                stack.push(Math.log(stack.pop()!));
+            } else if (token === 'sin'){
+                stack.push(Math.sin(stack.pop()!))
+            } else if (token === 'cos'){
+                stack.push(Math.cos(stack.pop()!))
+            } else if (token === 'tan') {
+                stack.push(Math.tan(stack.pop()!))
+            } else if (token === 'arctan') {
+                stack.push(Math.atan(stack.pop()!))
+            } else if (token === 'abs') {
+                stack.push(Math.abs(stack.pop()!))
+            } else if (token === 'fac') {
+                stack.push(this.factorial(stack.pop()!))
+            } else if (token === 'inv') {
+                stack.push(1 / stack.pop()!)
+            }
+        });
+
+        return stack.pop()!;
+    }
+
+    factorial(n: number): number {
+        if (n <= 0) {
+            return 1;
+        } else {
+            return n * this.factorial(n - 1);
+        }
+    }
+
+    calculate(expression: string) {
+        try {
+            const postfix = this.infixToPostfix(expression)
+            const result = this.evaluatePostfix(postfix)
+            this.displayValue = result.toString()
+
+        } catch (e) {
+            this.displayValue = 'Error'
+        }
+    }
 
 }

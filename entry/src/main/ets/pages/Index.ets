@@ -1,3 +1,5 @@
+import { router } from '@kit.ArkUI'
+
 @Entry
 @Component
 struct Index {
@@ -6,6 +8,11 @@ struct Index {
 
     build() {
         Column() {
+            Button("calculator").onClick(() => {
+                router.pushUrl({
+                    url: 'pages/calculator'
+                })
+            })
             Text('Expression:')
                 .fontSize(20)
                 .fontWeight(FontWeight.Bold)
@@ -38,6 +45,7 @@ struct Index {
             ['-', 1],
             ['*', 2],
             ['/', 2],
+            ['%', 2],
             ['^', 3],
             ['sqrt', 3],
             ['log10', 3],
@@ -114,7 +122,11 @@ struct Index {
 
         postfix.forEach(token => {
             console.log('Token:', token)
-            if (!isNaN(parseFloat(token))) {
+            if (token === 'e' ) {
+                stack.push(Math.E)
+            } else if(token === 'π') {
+                stack.push(Math.PI)
+            } else if (!isNaN(parseFloat(token))) {
                 stack.push(parseFloat(token))
             } else if (token === '+') {
                 stack.push(stack.pop()! + stack.pop()!)
@@ -122,6 +134,8 @@ struct Index {
                 const b = stack.pop()!
                 const a = stack.pop()!
                 stack.push(a - b)
+            } else if (token === '%') {
+                stack.push(stack.pop()! % stack.pop()!)
             } else if (token === '*') {
                 stack.push(stack.pop()! * stack.pop()!)
             } else if (token === '/') {
