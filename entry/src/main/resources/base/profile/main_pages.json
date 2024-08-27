@@ -3,6 +3,9 @@
     "pages/Index",
     "pages/calculator",
     "pages/ScientificCalc",
-    "pages/CoderCalc"
+    "pages/CoderCalc",
+    "pages/Contacts",
+    "pages/AddContact",
+    "pages/EditContact"
   ]
 }

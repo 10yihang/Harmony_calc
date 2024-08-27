@@ -13,6 +13,12 @@ struct Index {
                     url: 'pages/calculator'
                 })
             })
+            Text().height(50)
+            Button("Contacts").onClick(()=>{
+                router.pushUrl({
+                    url: 'pages/Contacts'
+                })
+            })
             Text('Expression:')
                 .fontSize(20)
                 .fontWeight(FontWeight.Bold)
