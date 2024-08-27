@@ -1,5 +1,5 @@
 import router from '@ohos.router';
-import { insertData } from '../ContactDB';
+import { MyRdb } from '../ContactDB';
 
 @Entry
 @Component
@@ -21,7 +21,7 @@ struct AddContactPage {
 
             Button('Save').onClick(() => {
                 if (this.name !== '' && this.phone !== '') {
-                    insertData(getContext(this), [{ name: this.name, phone: this.phone }]).then(() => {
+                    MyRdb.getInstance().insertUser(getContext(this), this.name, this.phone).then(() => {
                         router.back(0);
                     });
                 }

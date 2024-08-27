@@ -1,5 +1,5 @@
 import router from '@ohos.router';
-import { queryData, updateData } from '../ContactDB';
+import { MyRdb } from '../ContactDB';
 
 
 
@@ -36,7 +36,7 @@ struct EditContactPage {
                 .width('100%').height(50).fontSize(20).padding(10);
 
             Button('Save').onClick(() => {
-                updateData(getContext(this), { id: this.ID, name: this.name, phone: this.phone }).then(() => {
+                MyRdb.getInstance().updateUserInfo(getContext(this), this.ID, this.name, this.phone).then(() => {
                     router.back(0);
                 });
             }).width('100%').height(50).fontSize(20).padding(10);
