@@ -71,7 +71,8 @@ export class MyRdb {
         }
 
         await this.rdbStore!!.insert(this.TABLE_NAME, valueBucket, relationalStore.ConflictResolution.ON_CONFLICT_REPLACE)
-    }
+        console.info('insertUser', `insertUser ${name}  ${phone} success`)
+}
 
     private async createTable(): Promise<void> {
         console.info('createTable', 'createTable begin');
@@ -137,6 +138,7 @@ export class MyRdb {
          let list: Array<Info> = []
          while(resultSet.goToNextRow()){
              list.push(new Info(resultSet.getLong(0), resultSet.getString(1), resultSet.getString(2)))
+             console.info('queryAllUserInfo', `${resultSet.getLong(0)} ${resultSet.getString(1)} ${resultSet.getString(2)}`)
          }
          return list
      }

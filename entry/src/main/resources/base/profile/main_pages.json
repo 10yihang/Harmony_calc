@@ -6,6 +6,7 @@
     "pages/CoderCalc",
     "pages/Contacts",
     "pages/AddContact",
-    "pages/EditContact"
+    "pages/EditContact",
+    "pages/ContactsSearch"
   ]
 }
