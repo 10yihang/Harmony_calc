@@ -9,7 +9,7 @@ struct AddContactPage {
 
     build() {
         Column() {
-            Text('Add Contact').fontSize(30).padding(10);
+            Text('添加联系人').fontSize(30).padding(10);
 
             TextInput({ placeholder: 'Name', text: this.name })
                 .onChange((value: string) => this.name = value)

@@ -1,7 +1,6 @@
 import router from '@ohos.router';
 import { Context, featureAbility } from '@kit.AbilityKit';
 import { MyRdb, Info } from '../ContactDB';
-import { BusinessError } from '@kit.BasicServicesKit';
 import {pinyin4js} from '@ohos/pinyin4js';
 
 interface Contact {
@@ -17,8 +16,9 @@ struct ContactsPage {
     @State index: number = 0;
     @State context: Context = getContext();
     @State isListReachEnd: boolean = false;
-    @State letters: string[] = ['A','B','C','D','E','F','G', 'H','I','J', 'K','L','M','N', 'O','P','Q','R','S','T','U','V','W','X','Y','Z','#']
+    @State letters: string[] = ['-', 'A','B','C','D','E','F','G', 'H','I','J', 'K','L','M','N', 'O','P','Q','R','S','T','U','V','W','X','Y','Z','#']
     @State flist:Contact[] = []
+    @State blist:Contact[] = []
     @State isRefreshing: boolean = false
     @State needRefresh: boolean = false
 
@@ -43,14 +43,25 @@ struct ContactsPage {
                 .width('100')
                 .margin({ right: 'auto', left: 'auto' }) // Centers the text
 
-            // Search button on the right
-            // Image('../../resources/base/media/Bigger.png')
-            Text('搜索')
-                .fontSize(20)
-                .onClick(() => {
-                    // Handle the search button click event
-                    router.pushUrl({ url: 'pages/ContactsSearch' });
-                })
+            Button() {
+                Image('resources/base/media/Bigger.png')
+                    .height(24)
+                    .width(24)
+            }
+            .onClick(() => {
+                router.pushUrl({
+                    url: 'pages/ContactsSearch'
+                });
+            })
+            .width(40) // Increase the size to make sure the clickable area is larger
+            .height(40)
+            .backgroundColor(Color.Transparent)
+            // Text('搜索')
+            //     .fontSize(20)
+            //     .onClick(() => {
+            //         // Handle the search button click event
+            //         router.pushUrl({ url: 'pages/ContactsSearch' });
+            //     })
         }
         .width('100%')
         .justifyContent(FlexAlign.SpaceBetween) // Distribute items with space between
@@ -81,7 +92,7 @@ struct ContactsPage {
     @Builder itemEnd(index: number) {
         // 侧滑后尾端出现的组件
         Button({ type: ButtonType.Circle }) {
-            Image('../../resources/base/media/delete.png')
+            Image('resources/base/media/delete.png')
                 .width(20)
                 .height(20)
                 .fillColor(Color.Red)
@@ -115,7 +126,7 @@ struct ContactsPage {
 
     async initializeAndLoadData() {
         await MyRdb.getInstance().initRdbStore(this.context);
-        await MyRdb.getInstance().insertUser(this.context, 'Hyh', '1234567890');
+        // await MyRdb.getInstance().insertUser(this.context, 'Hyh', '1234567890');
         // await MyRdb.getInstance().insertUser(this.context, 'Jane Smith', '9876543210');
         // await MyRdb.getInstance().insertUser(this.context, 'Mike Brown', '5555555555');
         this.loadContacts();
@@ -138,8 +149,8 @@ struct ContactsPage {
     }
 
     loadContacts():Promise<void> {
-        this.flistinit()
         MyRdb.getInstance().queryAllUserInfo(getContext()).then((data) => {
+            this.flistinit()
             this.contactList = data;
             console.info('contactList', this.flist.length)
             for (let i = 0; i < data.length; i++) {
@@ -147,18 +158,18 @@ struct ContactsPage {
                 if(data[i].name.charAt(0) >= '0' && data[i].name.charAt(0) <= '9') this.flist[this.letters.length-1].data.push(data[i])
                 else {
                     if(data[i].name.charAt(0) >= 'A' && data[i].name.charAt(0) <= 'Z') {
-                        let index = data[i].name.charCodeAt(0) - 'A'.charCodeAt(0);
+                        let index = data[i].name.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
                         this.flist[index].data.push(data[i])
                     } else if(data[i].name.charAt(0) >= 'a' && data[i].name.charAt(0) <= 'z') {
-                        let index = data[i].name.charCodeAt(0) - 'a'.charCodeAt(0);
+                        let index = data[i].name.charCodeAt(0) - 'a'.charCodeAt(0) + 1;
                         this.flist[index].data.push(data[i])
                     } else {
                         let str: string = pinyin4js.getFirstLetter(data[i].name, pinyin4js.FIRST_LETTER);
                         if(str.charAt(0) >= 'A' && str.charAt(0) <= 'Z') {
-                            let index = str.charCodeAt(0) - 'A'.charCodeAt(0);
+                            let index = str.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
                             this.flist[index].data.push(data[i])
                         } else if(str.charAt(0) >= 'a' && str.charAt(0) <= 'z') {
-                            let index = str.charCodeAt(0) - 'a'.charCodeAt(0);
+                            let index = str.charCodeAt(0) - 'a'.charCodeAt(0) + 1;
                             this.flist[index].data.push(data[i])
                         }
                     }
@@ -179,7 +190,7 @@ struct ContactsPage {
                             List({ scroller: this.listScroller }) {
                                 ListItemGroup() {
                                     ListItem() {
-                                        ContactsRow({ imagePath: '/images/contact_0.png', titleString: '新的朋友' })
+                                        ContactsRow({ imagePath: 'resources/base/media/newFriend.png', titleString: '新的朋友' })
                                     }.onClick(() => {
                                         router.pushUrl({
                                             url: 'pages/AddContact'
@@ -199,7 +210,7 @@ struct ContactsPage {
                                         ForEach(item.data, (p: Info, i: number) => {
                                             ListItem() {
                                                 Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
-                                                    Image('../../resources/base/media/startIcon.png')
+                                                    Image('resources/base/media/startIcon.png')
                                                         .width(45)
                                                         .height(45)
                                                         .borderRadius(5)
@@ -249,9 +260,9 @@ struct ContactsPage {
                             .onScrollIndex((firstIndex: number) => {
                                 this.selectedIndex = firstIndex
                                 console.log('**************', firstIndex);
-                                if (firstIndex > 2) {
+                                if (firstIndex >= 2) {
                                     this.selectedIndex =
-                                        this.flist.findIndex(i => i.letter === this.flist[firstIndex - 3]?.letter);
+                                        this.flist.findIndex(i => i.letter === this.flist[firstIndex-1]?.letter);
                                 }
                             })
                         }
@@ -270,7 +281,7 @@ struct ContactsPage {
                             .alignStyle(IndexerAlign.Left)// 弹出框在索引条左侧弹出
                             .onSelect((index: number) => {
                                 console.info(this.letters[index] + ' Selected!', index)
-                                this.listScroller.scrollToIndex(index)
+                                this.listScroller.scrollToIndex(index+1)
                             })
                             .onPopupSelect((index: number) => {
                                 console.info('onPopupSelected:' + index)

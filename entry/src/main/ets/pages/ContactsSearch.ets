@@ -37,7 +37,7 @@ struct SearchPage {
      build() {
         Column() {
             Row() {
-                Image('../../resources/base/media/Bigger.png')
+                Image('resources/base/media/Bigger.png')
                     .width(24)
                     .height(24)
                     .margin({ right: 10 });
@@ -71,9 +71,12 @@ struct SearchPage {
                                     }
                                 });
                             })
+
                         }
                         .backgroundColor(Color.White)
                         Text().height(5)
+
+                        Divider().strokeWidth(8).color('#F1F3F5')
                     })
                 }
             }

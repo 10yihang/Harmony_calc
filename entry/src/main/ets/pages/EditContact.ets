@@ -25,7 +25,7 @@ struct EditContactPage {
 
     build() {
         Column() {
-            Text('Edit Contact').fontSize(30).padding(10);
+            Text('联系人信息').fontSize(30).padding(10);
 
             TextInput({ placeholder: 'Name', text: this.name })
                 .onChange((value: string) => this.name = value)

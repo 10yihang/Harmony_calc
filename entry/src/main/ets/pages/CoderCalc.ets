@@ -57,7 +57,7 @@ struct CoderCalc {
 
             // 按钮布局
             Row() {
-                Button('C').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('C').width('23%').height(60).fontSize(24).onClick(() => {
                     this.displayValue = '';
                     this.firstOperand = '';
                     this.currentOperator = '';
@@ -68,42 +68,57 @@ struct CoderCalc {
                     this.hexadecimalValue = '';
                 })
                     .margin({ right: 5 });
-                Button('<<').width('23%').height(80).fontSize(24).onClick(() => {
-                    if (this.displayValue!== '') {
-                        this.displayValue = this.leftShift(parseInt(this.displayValue)).toString();
-                        this.updateAllBases(this.displayValue);
-                    }
+
+                Button('^').width('23%').height(60).fontSize(24).onClick(() => {
+                    this.performOperation('^')
                 })
                     .margin({ right: 5 });
-                Button('>>').width('23%').height(80).fontSize(24).onClick(() => {
-                    if (this.displayValue!== '') {
-                        this.displayValue = this.rightShift(parseInt(this.displayValue)).toString();
-                        this.updateAllBases(this.displayValue);
-                    }
+
+                Button('|').width('23%').height(60).fontSize(24).onClick(() => {
+                    this.performOperation('|')
                 })
                     .margin({ right: 5 });
-                Button('&').width('23%').height(80).fontSize(24).onClick(() => {
-                    this.performBitwiseOperation('&');
+
+                Button('&').width('23%').height(60).fontSize(24).onClick(() => {
+                    this.performOperation('&')
                 })
                     .margin({ right: 5 });
             };
 
             Text().height(5);
 
+            Row(){
+                Button('<<').width('45%').height(60).fontSize(24).onClick(() => {
+                    if (this.displayValue!== '') {
+                        this.displayValue = this.leftShift(parseInt(this.displayValue)).toString();
+                        this.updateAllBases(this.displayValue);
+                    }
+                })
+                    .margin({ right: 5 });
+                Button('>>').width('45%').height(60).fontSize(24).onClick(() => {
+                    if (this.displayValue!== '') {
+                        this.displayValue = this.rightShift(parseInt(this.displayValue)).toString();
+                        this.updateAllBases(this.displayValue);
+                    }
+                })
+                    .margin({ right: 5 });
+            }
+            Text().height(5);
+
             Row() {
-                Button('7').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('7').width('23%').height(60).fontSize(24).onClick(() => {
                     this.appendToDisplay('7');
                 })
                     .margin({ right: 5 });
-                Button('8').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('8').width('23%').height(60).fontSize(24).onClick(() => {
                     this.appendToDisplay('8');
                 })
                     .margin({ right: 5 });
-                Button('9').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('9').width('23%').height(60).fontSize(24).onClick(() => {
                     this.appendToDisplay('9');
                 })
                     .margin({ right: 5 });
-                Button('×').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('×').width('23%').height(60).fontSize(24).onClick(() => {
                     this.performOperation('*');
                 })
                     .margin({ right: 5 });
@@ -112,19 +127,19 @@ struct CoderCalc {
             Text().height(5);
 
             Row() {
-                Button('4').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('4').width('23%').height(60).fontSize(24).onClick(() => {
                     this.appendToDisplay('4');
                 })
                     .margin({ right: 5 });
-                Button('5').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('5').width('23%').height(60).fontSize(24).onClick(() => {
                     this.appendToDisplay('5');
                 })
                     .margin({ right: 5 });
-                Button('6').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('6').width('23%').height(60).fontSize(24).onClick(() => {
                     this.appendToDisplay('6');
                 })
                     .margin({ right: 5 });
-                Button('-').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('-').width('23%').height(60).fontSize(24).onClick(() => {
                     if (this.displayValue!== '') {
                         this.performOperation('-');
                     } else {
@@ -137,19 +152,19 @@ struct CoderCalc {
             Text().height(5);
 
             Row() {
-                Button('1').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('1').width('23%').height(60).fontSize(24).onClick(() => {
                     this.appendToDisplay('1');
                 })
                     .margin({ right: 5 });
-                Button('2').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('2').width('23%').height(60).fontSize(24).onClick(() => {
                     this.appendToDisplay('2');
                 })
                     .margin({ right: 5 });
-                Button('3').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('3').width('23%').height(60).fontSize(24).onClick(() => {
                     this.appendToDisplay('3');
                 })
                     .margin({ right: 5 });
-                Button('+').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('+').width('23%').height(60).fontSize(24).onClick(() => {
                     this.performOperation('+');
                 })
                     .margin({ right: 5 });
@@ -158,23 +173,23 @@ struct CoderCalc {
             Text().height(5);
 
             Row() {
-                Button('±').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('±').width('23%').height(60).fontSize(24).onClick(() => {
                     if (this.displayValue!== '') {
                         this.displayValue = (parseFloat(this.displayValue) * -1).toString();
                     }
                 })
                     .margin({ right: 5 });
-                Button('0').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('0').width('23%').height(60).fontSize(24).onClick(() => {
                     this.appendToDisplay('0');
                 })
                     .margin({ right: 5 });
-                Button('.').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('.').width('23%').height(60).fontSize(24).onClick(() => {
                     if (!this.displayValue.includes('.')) {
                         this.appendToDisplay('.');
                     }
                 })
                     .margin({ right: 5 });
-                Button('=').width('23%').height(80).fontSize(24).onClick(() => {
+                Button('=').width('23%').height(60).fontSize(24).onClick(() => {
                     this.performEqual();
                     if (this.selectedMode === '程序员') {
                         this.updateAllBases(this.displayValue);
@@ -240,6 +255,15 @@ struct CoderCalc {
                         return;
                     }
                     break;
+                 case '&':
+                     result = num1 & num2;
+                     break;
+                 case '^':
+                     result = num1 ^ num2;
+                     break;
+                 case '|':
+                     result = num1 | num2;
+                     break;
                 default:
                     result = num1;
             }
@@ -252,24 +276,38 @@ struct CoderCalc {
         }
     }
 
+
+
     performBitwiseOperation(operator: string) {
-        if (this.displayValue!== '' && this.firstOperand!== '') {
-            let num1 = parseInt(this.firstOperand);
-            let num2 = parseInt(this.displayValue);
-            let result: number = 1;
+        if (this.displayValue !== '' && this.firstOperand !== '') {
+            let num1 = parseInt(this.firstOperand, 10);
+            let num2 = parseInt(this.displayValue, 10);
+            let result: number;
+
             switch (operator) {
                 case '&':
                     result = num1 & num2;
                     break;
+                case '^':
+                    result = num1 ^ num2;
+                    break;
+                case '|':
+                    result = num1 | num2;
+                    break;
+            // You can add more cases for other bitwise operations if needed
+                default:
+                    return; // Exit if the operator is not recognized
             }
-            this.displayValue = result.toString();
-            this.firstOperand = '';
-            this.currentOperator = '';
-            this.waitingForSecondOperand = false;
 
-            this.updateAllBases(this.displayValue);
+            this.displayValue = result.toString();
+            this.firstOperand = ''; // Clear first operand after operation
+            this.currentOperator = ''; // Clear operator
+            this.waitingForSecondOperand = false; // Reset flag
+
+            this.updateAllBases(this.displayValue); // Update bases
         }
     }
+
 
     leftShift(num: number): number {
         return num << 1;
